@@ -17,26 +17,28 @@ export MINIMALTDROOT=server/minimaltdfs
 all: serverbasic clientbasic
 
 myRpc.go: myRpc.t
-        $(ETN2GO) . myRpc main $^
+	$(ETN2GO) . myRpc main $^
 
 serverbasic: serverbasic.go myRpc.go
-        ethosGo $^
+	ethosGo $^
 
 clientbasic: clientbasic.go myRpc.go
-        ethosGo $^
+	ethosGo $^
 
-install:clean serverbasic clientbasic
-                (ethosParams server && cd server && ethosMinimaltdBuilder)
-                ethosTypeInstall myRpc
-#               ethosDirCreate $(ETHOSROOT)/services/myRpc   $(ETHOSROOT)/types/spec/myRpc/MyRpc all
-                install -D  serverbasic clientbasic         $(ETHOSROOT)/programs
-                ethosStringEncode /programs/serverbasic > $(ETHOSROOT)/etc/init/services/serverbasic
+install: clean serverbasic clientbasic
+	(ethosParams server && cd server && ethosMinimaltdBuilder)
+	ethosTypeInstall myRpc
+	ethosServiceInstall myRpc
+	ethosDirCreate $(ETHOSROOT)/services/myRpc   $(ETHOSROOT)/types/spec/myRpc/MyRpc all
+	install -D  serverbasic clientbasic	$(ETHOSROOT)/programs
+	ethosStringEncode /programs/serverbasic > $(ETHOSROOT)/etc/init/services/serverbasic
+	ethosStringEncode /programs/clientbasic > $(ETHOSROOT)/etc/init/services/clientbasic
 
 clean:
-        sudo rm -rf server
-        rm -rf myRpc/ myRpcIndex/
-        rm -f myRpc.go
-        rm -f serverbasic
-        rm -f serverbasic.goo.ethos
-        rm -f clientbasic
-        rm -f clientbasic.goo.ethos
+	sudo rm -rf server
+	rm -rf myRpc/ myRpcIndex/
+	rm -f myRpc.go
+	rm -f serverbasic
+	rm -f serverbasic.goo.ethos
+	rm -f clientbasic
+	rm -f clientbasic.goo.ethos
